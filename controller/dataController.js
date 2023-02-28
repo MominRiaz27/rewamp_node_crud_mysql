@@ -1,25 +1,33 @@
 import logger from '../logger/logger.js';
 import Customers from '../model/Biodata.js';
+import nodemailer from "nodemailer"
+import  transport  from '../config/email.js';
+import { sendEmail } from '../Utils/emailService.js';
+
+
+
 
 export const getAllCustomers = async (req, res) => {
-    await Customers.getAllCustomers().then((result) => {
-        res.json(result[0])
+    await Customers.getAllCustomers().then(([result]) => {
+        res.json(result)
     })
-}
+    }
 
 export const getCustomerById = async (req, res) => {
-    await Customers.getCustomerById(req.params.id).then((result) => {
-        if ( result[0].length > 0 ) {
-            res.json(result[0])
+    await Customers.getCustomerById(req.params.id).then(([rows]) => {
+        if ( result.length > 0 ) {
+            console.log(result)
+            res.json(result)
         } else {
             res.json({ message: "customer not found" })
         }
     })
 }
 
-export const postCustomer = async (req, res) => {
-    await Customers.postCustomer(req.body)
+export const postCustomer = (req, res) => {
+     Customers.postCustomer(req.body)
     .then(() => {
+        sendEmail(req)
         res.json({
             success: true, 
             result: 'the row is inserted successfully'
@@ -67,4 +75,17 @@ export const deleteCustomerById = async (req, res) => {
         })
     })
 }
+
+// export const sendEmail = ()=>{
+    
+//       transport.sendMail({
+//         from: "Momin.Riaz427@gmail.com",
+//         to: "detig17215@pubpng.com",
+//         subject: "Your account is Registered",
+//         html: `<h1>Email Feature Test</h1>
+//             <h2>Hello ${"Momin"}</h2>
+//             <h2>Email ${"Momin.Riaz427@gmail.com"}</h2>
+//             </div>`,
+//       }).catch(err => console.log(err));
+// }
 
