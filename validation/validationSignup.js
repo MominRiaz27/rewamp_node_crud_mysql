@@ -1,10 +1,10 @@
 import logger from "../logger/logger.js";
-import { reqSchema } from "../schema/schema.js";
+import { signupSchema } from "../schema/schema.js";
 
 
 
-   function  customerValidation (req, res, next)  {
-        const value =  reqSchema.validate(req.body);
+   function  signupValidation (req, res, next)  {
+        const value =  signupSchema.validate(req.body);
         if (value.error) {
             logger.error(value.error)
             res.json({
@@ -15,4 +15,7 @@ import { reqSchema } from "../schema/schema.js";
             next();
         }
     }
-export default customerValidation;
+
+     
+//export default signupValidation ;
+export default signupValidation;

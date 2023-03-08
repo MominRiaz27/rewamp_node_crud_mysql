@@ -3,6 +3,8 @@ import Customers from '../model/Biodata.js';
 import nodemailer from "nodemailer"
 import  transport  from '../config/email.js';
 import { sendEmail } from '../Utils/emailService.js';
+import jwt from 'jsonwebtoken'
+import bcrypt from "bcrypt"
 
 
 
@@ -24,31 +26,48 @@ export const getCustomerById = async (req, res) => {
     })
 }
 
-export const postCustomer = (req, res) => {
-     Customers.postCustomer(req.body)
+export const Signup = (req, res) => {
+    console.log("inside signup")
+     Customers.Signup(req.body)
     .then(() => {
-        sendEmail(req)
+        //sendEmail(req)
         res.json({
             success: true, 
-            result: 'the row is inserted successfully'
+            message: 'the row is inserted successfully'
         })
     })
     .catch((error) => {
         logger.error(error)
         res.json({
             success: false, 
-            result: error.message
+            message: error.message
         })
     })
 }
 
-export const putCustomerById = async (req, res) => {
-    await Customers.putCustomerById(req.params.id, req.body) 
-    .then(() => {
-        res.json({
-            success: true, 
-            result: 'the row is updated successfully'
-        })
+export const Login = async (req, res) => {
+    await Customers.Login(req.body) 
+    .then(([row]) => {
+        console.log(row[0])
+        console.log(row[0].EncryptedPassword)
+        bcrypt.compare(req.body.Password, row[0].EncryptedPassword, function(err, result) {
+            console.log(result)
+            if(result == true){
+                const token = jwt.sign(row[0], 'my-secret-key');
+                res.header('Authorization', `Bearer ${token}`);
+                res.set('Access-Control-Expose-Headers', 'Authorization');
+                res.json({
+                    success: true, 
+                    message: 'User Matched'
+                })
+            }
+            else{
+                res.send("password dosen't match ")
+            }
+            
+         });
+        
+        
     })
     .catch((error) => {
         logger.error(error)

@@ -13,9 +13,15 @@ class Customers {
         return table.execute(`select * from Customer where id = ${id}`)
     }
 
-    static async postCustomer(data) {
+    static async Signup(data) {
       
-        let query = `insert into Customer (Email,Password,EncryptedPassword,Number,Date,CNIC) values ("${data.Email}","${data.Password}","${await this.hashPassword(data.Password)}","${data.Number}","${data.Date}","${data.CNIC}")`
+        let query = `insert into user (Email,Password, ConfirmPassword,EncryptedPassword,CNIC) values ("${data.Email}","${data.Password}","${data.ConfirmPassword}","${await this.hashPassword(data.Password)}","${data.CNIC}")`
+      
+        return table.execute(query)
+    }
+    static async Login(data) {
+      
+        let query = `select * from user where Email ='${data.Email}' `
       
         return table.execute(query)
     }
